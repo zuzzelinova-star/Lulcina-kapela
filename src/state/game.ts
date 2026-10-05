@@ -1,8 +1,9 @@
 import { LADDER } from '../content/ladder'
 import { indexLadder, type LadderIndex } from '../engine/items'
-import { applyOutcome, updateUnlocks, type ItemStates } from '../engine/mastery'
+import { applyOutcome, MASTERED_LEVEL, updateUnlocks, type ItemStates } from '../engine/mastery'
 import {
   applyPlacement,
+  PLACEMENT_LEVEL,
   placementQuestion,
   recordPlacement,
   startPlacement,
@@ -29,7 +30,7 @@ export interface PlacementState {
 }
 
 export interface GameState {
-  version: 1
+  version: 2
   nickname: string
   placementDone: boolean
   placement: PlacementState | null
@@ -44,7 +45,7 @@ export interface GameState {
 
 export function initialState(): GameState {
   return {
-    version: 1,
+    version: 2,
     nickname: 'Lulu',
     placementDone: false,
     placement: null,
@@ -82,11 +83,11 @@ export function reducer(state: GameState, action: Action): GameState {
       if (!progress.done) {
         return { ...state, placement: { progress, question: placementQuestion(index, progress, mulberry32(action.seed)) } }
       }
-      const placed = applyPlacement(index, state.items, progress.passedUpTo, action.today, action.now)
+      const placed = applyPlacement(index, state.items, progress.passedUpTo, action.now)
       return {
         ...state,
         items: placed.items,
-        unlockedUpTo: Math.max(state.unlockedUpTo, placed.unlockedUpTo),
+        unlockedUpTo: placed.unlockedUpTo,
         placementDone: true,
         placement: { progress, question: null },
         daysPlayed: addDay(state.daysPlayed, action.today),
@@ -157,4 +158,25 @@ export function reducer(state: GameState, action: Action): GameState {
 
 function addDay(days: string[], today: string): string[] {
   return days.includes(today) ? days : [...days, today]
+}
+
+/**
+ * Verzia 1 → 2: konkurz predtým označil zvládnuté zručnosti za osvojené a preskočil ich.
+ * Také položky (úroveň 3+, ale ani jeden pokus) dostanú len náskok a hra začne od základov.
+ * Skutočne odohrané odpovede ostávajú.
+ */
+export function migrate(raw: Record<string, unknown>): GameState {
+  const base = { ...initialState(), ...(raw as Partial<GameState>) }
+  if (raw.version === 1) {
+    const items: ItemStates = {}
+    for (const [id, st] of Object.entries(base.items)) {
+      items[id] =
+        st.attempts === 0 && st.level >= MASTERED_LEVEL
+          ? { ...st, level: PLACEMENT_LEVEL, nextDue: null, reviewStep: 0, lastChangeDay: null }
+          : st
+    }
+    const unlocked = updateUnlocks(LADDER_INDEX, LADDER_INDEX.skills[0].order, items)
+    return { ...base, version: 2, items, unlockedUpTo: unlocked.unlockedUpTo, round: null, celebrate: [] }
+  }
+  return { ...base, version: 2 }
 }

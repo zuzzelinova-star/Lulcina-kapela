@@ -1,4 +1,4 @@
-import { initialState, type GameState } from './game'
+import { initialState, migrate, type GameState } from './game'
 
 const KEY = 'lulcina-kapela:v1'
 
@@ -7,9 +7,9 @@ export function loadState(): GameState {
   try {
     const raw = localStorage.getItem(KEY)
     if (!raw) return initialState()
-    const parsed = JSON.parse(raw) as Partial<GameState>
-    if (parsed.version !== 1) return initialState()
-    return { ...initialState(), ...parsed }
+    const parsed = JSON.parse(raw) as Record<string, unknown>
+    if (parsed.version !== 1 && parsed.version !== 2) return initialState()
+    return migrate(parsed)
   } catch {
     return initialState()
   }

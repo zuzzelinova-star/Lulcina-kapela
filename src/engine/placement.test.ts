@@ -1,9 +1,8 @@
 import { describe, expect, it } from 'vitest'
 import { LADDER } from '../content/ladder'
-import { addDays } from './dates'
 import { indexLadder } from './items'
-import { currentSkill, skillProgress } from './mastery'
-import { applyPlacement, placementQuestion, recordPlacement, startPlacement, type PlacementProgress } from './placement'
+import { applyOutcome, currentSkill, MASTERED_LEVEL, skillProgress } from './mastery'
+import { applyPlacement, PLACEMENT_LEVEL, placementQuestion, recordPlacement, startPlacement, type PlacementProgress } from './placement'
 import { mulberry32 } from './rng'
 
 const index = indexLadder(LADDER)
@@ -47,21 +46,29 @@ describe('konkurz', () => {
     expect(p.done).toBe(true)
   })
 
-  it('výsledok: zvládnuté zručnosti sú osvojené, ďalšia je aktuálna a zajtra sa opakuje', () => {
-    const r = applyPlacement(index, {}, 8, TODAY, 1)
-    expect(r.unlockedUpTo).toBe(9)
-    for (const s of index.skills.filter((s) => s.order <= 8)) expect(skillProgress(index, s.id, r.items).isMastered).toBe(true)
-    expect(currentSkill(index, r.unlockedUpTo, r.items).id).toBe('prechod-plus')
-    const any = r.items['scitanie10/add:3+4']
-    expect(any.nextDue).toBe(addDays(TODAY, 1))
-  })
-
-  it('keď nezvládne nič, začína od prvej zručnosti', () => {
-    const { p } = play(() => false)
-    expect(p.passedUpTo).toBe(0)
-    const r = applyPlacement(index, {}, 0, TODAY, 1)
+  it('výsledok: nič sa nepreskočí, začína sa od prvej zručnosti', () => {
+    const r = applyPlacement(index, {}, 8, 1)
     expect(r.unlockedUpTo).toBe(1)
     expect(currentSkill(index, r.unlockedUpTo, r.items).id).toBe('pocet10')
+    for (const s of index.skills) expect(skillProgress(index, s.id, r.items).isMastered).toBe(false)
+  })
+
+  it('zvládnuté zručnosti dostanú náskok: jedna správna odpoveď a príklad je osvojený', () => {
+    const r = applyPlacement(index, {}, 8, 1)
+    const st = r.items['scitanie10/add:3+4']
+    expect(st.level).toBe(PLACEMENT_LEVEL)
+    expect(st.lastChangeDay).toBeNull()
+    expect(applyOutcome(st, 'correct', TODAY, 1000, 2).level).toBe(MASTERED_LEVEL)
+    // Nezvládnuté zručnosti náskok nedostanú.
+    expect(r.items['prechod-plus/add:8+5']).toBeUndefined()
+  })
+
+  it('keď nezvládne nič, začína od prvej zručnosti bez náskoku', () => {
+    const { p } = play(() => false)
+    expect(p.passedUpTo).toBe(0)
+    const r = applyPlacement(index, {}, 0, 1)
+    expect(r.unlockedUpTo).toBe(1)
+    expect(Object.keys(r.items)).toHaveLength(0)
   })
 
   it('neopakuje rovnakú otázku', () => {

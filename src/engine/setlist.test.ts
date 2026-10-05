@@ -54,7 +54,7 @@ describe('zostavenie setlistu', () => {
   it('nikdy viac ako 3 úlohy rovnakého typu za sebou ani ten istý príklad dvakrát po sebe', () => {
     for (let seed = 1; seed <= 200; seed++) {
       const rng = mulberry32(seed)
-      const unlocked = 2 + (seed % 9) // zručnosti 2–10 majú vždy aspoň dve aktivity
+      const unlocked = 1 + (seed % 11) // zručnosti 1–11 majú vždy aspoň dve aktivity
       const tasks = buildSetlist({ index, items: masteredUpTo(unlocked - 1), unlockedUpTo: unlocked, today: TODAY, rng })
       expect(sequenceViolations(tasks), `seed ${seed}, zručnosť ${unlocked}`).toBe(0)
     }

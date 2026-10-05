@@ -11,7 +11,7 @@ export const ACTIVITY_SUPPORTS: Record<ActivityId, FactKind[]> = {
 }
 
 /** Aktivity, ktoré už sú hotové. Ostatné sa pri skladaní setlistu preskočia. */
-export const ENABLED_ACTIVITIES: ActivityId[] = ['skusobna', 'kamarati', 'ladenie']
+export const ENABLED_ACTIVITIES: ActivityId[] = ['skusobna', 'kamarati', 'ladenie', 'hlasnejsi']
 
 export function supports(activity: ActivityId, fact: Fact): boolean {
   return ACTIVITY_SUPPORTS[activity].includes(fact.kind)

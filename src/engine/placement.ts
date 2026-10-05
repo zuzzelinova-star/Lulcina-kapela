@@ -1,6 +1,11 @@
-import { addDays } from './dates'
 import { instantiate, type LadderIndex } from './items'
 import { MASTERED_LEVEL, newItemState, type ItemStates } from './mastery'
+
+/**
+ * Úroveň, ktorú dostanú položky zvládnutých zručností. Je o jednu nižšia ako osvojenie,
+ * takže každý príklad treba ešte raz správne vyriešiť – nič sa nepreskočí, len to ide rýchlejšie.
+ */
+export const PLACEMENT_LEVEL = MASTERED_LEVEL - 1
 import { pick, type Rng } from './rng'
 import type { Fact } from './types'
 
@@ -83,14 +88,14 @@ export function recordPlacement(
 }
 
 /**
- * Výsledok konkurzu: zvládnuté zručnosti sa označia ako osvojené (úroveň 3)
- * a zajtra prídu na opakovanie, takže prípadná náhoda sa rýchlo ukáže.
+ * Výsledok konkurzu: zvládnuté zručnosti dostanú náskok (úroveň PLACEMENT_LEVEL),
+ * ale hra vždy začína od prvej zručnosti. Čo Lulu naozaj vie, prejde rýchlo
+ * (stačí jedna správna odpoveď na príklad), a nič sa nepreskočí.
  */
 export function applyPlacement(
   index: LadderIndex,
   items: ItemStates,
   passedUpTo: number,
-  today: string,
   now: number,
 ): { items: ItemStates; unlockedUpTo: number } {
   const next = { ...items }
@@ -98,18 +103,10 @@ export function applyPlacement(
     if (skill.order > passedUpTo) continue
     for (const item of index.itemsBySkill.get(skill.id) ?? []) {
       const prev = next[item.id] ?? newItemState()
-      if (prev.level >= MASTERED_LEVEL) continue
-      next[item.id] = {
-        ...prev,
-        level: MASTERED_LEVEL,
-        nextDue: addDays(today, 1),
-        reviewStep: 1,
-        lastChangeDay: today,
-        updatedAt: now,
-      }
+      if (prev.level >= PLACEMENT_LEVEL) continue
+      // lastChangeDay ostáva prázdny, aby príklad mohol stúpnuť hneď v prvom kole.
+      next[item.id] = { ...prev, level: PLACEMENT_LEVEL, nextDue: null, reviewStep: 0, lastChangeDay: null, updatedAt: now }
     }
   }
-  const after = index.skills.find((s) => s.order > passedUpTo)
-  const unlockedUpTo = after ? after.order : passedUpTo
-  return { items: next, unlockedUpTo: Math.max(unlockedUpTo, index.skills[0].order) }
+  return { items: next, unlockedUpTo: index.skills[0].order }
 }

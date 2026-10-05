@@ -1,4 +1,5 @@
 import { useCallback } from 'react'
+import { Hlasnejsi } from '../activities/Hlasnejsi'
 import { Kamarati } from '../activities/Kamarati'
 import { Ladenie } from '../activities/Ladenie'
 import { Skusobna } from '../activities/Skusobna'
@@ -26,6 +27,8 @@ function ActivityView({ task, onDone }: { task: Task; onDone: (r: ItemResult[]) 
   switch (task.activity) {
     case 'kamarati':
       return <Kamarati task={task} onDone={onDone} />
+    case 'hlasnejsi':
+      return <Hlasnejsi task={task} onDone={onDone} />
     case 'ladenie':
       return <Ladenie task={task} onDone={onDone} />
     default:

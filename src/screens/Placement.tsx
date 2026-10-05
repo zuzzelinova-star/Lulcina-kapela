@@ -53,8 +53,7 @@ export function Placement({
     )
   }
   if (!placement.question) {
-    const passed = placement.progress.passedUpTo
-    const next = LADDER_INDEX.skills.find((s) => s.order > passed) ?? LADDER_INDEX.skills[LADDER_INDEX.skills.length - 1]
+    const first = LADDER_INDEX.skills[0]
     return (
       <main className="screen center">
         <h1>
@@ -64,7 +63,7 @@ export function Placement({
           <Unicorn size={130} />
           <Fairy size={110} />
         </div>
-        <p className="intro">Kapela začne nacvičovať: {next.kidTitle}.</p>
+        <p className="intro">Kapela začne od základov: {first.kidTitle}. Čo už vieš, pôjde rýchlo!</p>
         <button type="button" className="btn btn-big" onClick={onFinish}>
           Na pódium <Lightning size={30} />
         </button>
@@ -78,7 +77,8 @@ function PlacementQuestion({ fact, count, onAnswer }: { fact: Fact; count: numbe
   const [value, setValue] = useState('')
   const [result, setResult] = useState<null | boolean>(null)
   const correct = resultOf(fact)
-  const showPicture = fact.kind === 'count' || fact.kind === 'compare'
+  // Bez obrázka by sa pri týchto úlohách nedalo nič vyriešiť.
+  const showPicture = fact.kind === 'count' || fact.kind === 'compare' || fact.kind === 'placeValue'
   const choices = fact.kind === 'compare'
 
   useEffect(() => {

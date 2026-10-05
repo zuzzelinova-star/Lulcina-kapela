@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { addDays } from '../engine/dates'
-import { initialState, reducer, type GameState } from './game'
+import { currentSkill } from '../engine/mastery'
+import { initialState, LADDER_INDEX, migrate, reducer, type GameState } from './game'
 
 const TODAY = '2026-10-05'
 
@@ -97,13 +98,50 @@ describe('priebeh kola', () => {
 })
 
 describe('konkurz v stave hry', () => {
-  it('po dokončení nastaví odomknuté zručnosti', () => {
+  it('po dokončení začína od základov a známe zručnosti sa rýchlo osvoja', () => {
     let s = reducer(initialState(), { type: 'placementStart', seed: 1 })
     let i = 0
     while (!s.placementDone && i < 50) {
       s = reducer(s, { type: 'placementAnswer', correct: s.placement!.progress.skillOrder <= 4, today: TODAY, now: 1, seed: i++ })
     }
     expect(s.placementDone).toBe(true)
-    expect(s.unlockedUpTo).toBe(5)
+    expect(s.unlockedUpTo).toBe(1)
+    expect(currentSkill(LADDER_INDEX, s.unlockedUpTo, s.items).id).toBe('pocet10')
+
+    // Prvý setlist je z počítania bodiek; správne odpovede posúvajú príklady rovno na osvojenie.
+    s = reducer(s, { type: 'roundStart', today: TODAY, seed: 7 })
+    const first = s.round!.tasks[0]
+    expect(first.itemIds[0].startsWith('pocet10/')).toBe(true)
+    s = reducer(s, {
+      type: 'taskDone',
+      results: first.itemIds.map((itemId) => ({ itemId, outcome: 'correct', ms: 900 })),
+      today: TODAY,
+      now: 2,
+      seed: 1,
+    })
+    expect(s.items[first.itemIds[0]].level).toBe(3)
+  })
+})
+
+describe('migrácia uloženého stavu', () => {
+  it('verzia 1: preskočené zručnosti z konkurzu sa vrátia, odohrané odpovede ostanú', () => {
+    const skipped = { level: 3, lastAttempt: null, nextDue: '2026-10-06', attempts: 0, lastChangeDay: TODAY, reviewStep: 1, times: [], updatedAt: 1 }
+    const played = { level: 1, lastAttempt: TODAY, nextDue: '2026-10-06', attempts: 2, lastChangeDay: TODAY, reviewStep: 0, times: [3000], updatedAt: 2 }
+    const v1 = {
+      ...initialState(),
+      version: 1,
+      placementDone: true,
+      unlockedUpTo: 6,
+      items: { 'scitanie10/add:3+4': skipped, 'cisla20/pv:13': played },
+      round: { tasks: [], index: 0, retried: [], startedDay: TODAY },
+    }
+    const s = migrate(v1 as unknown as Record<string, unknown>)
+    expect(s.version).toBe(2)
+    expect(s.unlockedUpTo).toBe(1)
+    expect(s.round).toBeNull()
+    expect(s.items['scitanie10/add:3+4'].level).toBe(2)
+    expect(s.items['scitanie10/add:3+4'].lastChangeDay).toBeNull()
+    expect(s.items['cisla20/pv:13']).toEqual(played)
+    expect(currentSkill(LADDER_INDEX, s.unlockedUpTo, s.items).id).toBe('pocet10')
   })
 })
