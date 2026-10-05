@@ -1,27 +1,708 @@
 :root {
   --fialova: #6b2fb3;
-  --cierna: #1a0b2e;
+  --fialova-svetla: #9b5be0;
+  --cierna: #120820;
+  --cierna-2: #1e0f36;
   --ruzova: #ff2fd6;
-  --strieborna: #c0c0d0;
+  --strieborna: #c8c8dc;
+  --biela: #f6f2ff;
+  --ok: #5cf2b0;
+  --touch: 56px;
   color-scheme: dark;
-  font-family: system-ui, -apple-system, sans-serif;
+  font-family: ui-rounded, 'SF Pro Rounded', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  -webkit-tap-highlight-color: transparent;
 }
-* { box-sizing: border-box; }
-html, body { margin: 0; min-height: 100%; }
+
+* {
+  box-sizing: border-box;
+}
+
+html,
 body {
-  background: radial-gradient(circle at 50% 0%, var(--fialova), var(--cierna) 70%);
-  color: var(--strieborna);
-  min-height: 100dvh;
+  margin: 0;
+  min-height: 100%;
+  overscroll-behavior: none;
 }
-.placeholder {
+
+body {
+  background: radial-gradient(ellipse at 50% -10%, var(--fialova), var(--cierna) 65%) fixed;
+  background-color: var(--cierna);
+  color: var(--biela);
   min-height: 100dvh;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  touch-action: manipulation;
+}
+
+h1,
+h2 {
+  margin: 0;
+}
+
+.c-silver {
+  color: var(--strieborna);
+}
+.c-purple {
+  color: #c77dff;
+}
+
+/* ---------- Rozloženie ---------- */
+
+.screen {
+  min-height: 100dvh;
+  max-width: 980px;
+  margin: 0 auto;
+  padding: max(12px, env(safe-area-inset-top)) max(16px, env(safe-area-inset-right)) max(16px, env(safe-area-inset-bottom))
+    max(16px, env(safe-area-inset-left));
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.center {
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
+.intro {
+  font-size: 1.3rem;
+  line-height: 1.4;
+  max-width: 32ch;
+  margin: 0 auto;
+  text-align: center;
+}
+
+.cast-row {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 8px;
+}
+
+.build {
+  margin-top: auto;
+  text-align: center;
+  font-size: 0.75rem;
+  opacity: 0.5;
+}
+
+/* ---------- Tlačidlá ---------- */
+
+.btn {
+  min-height: var(--touch);
+  min-width: var(--touch);
+  padding: 10px 22px;
+  border-radius: 18px;
+  border: 2px solid var(--strieborna);
+  background: var(--cierna-2);
+  font-size: 1.2rem;
+  font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.btn:active {
+  transform: scale(0.97);
+}
+
+.btn-big,
+.btn-primary {
+  background: linear-gradient(180deg, #ff5ae0, #c21aa4);
+  border-color: #ffd0f6;
+  box-shadow: 0 0 18px rgba(255, 47, 214, 0.55);
+  color: #fff;
+}
+
+.btn-big {
+  min-height: 72px;
+  font-size: 1.5rem;
+  width: min(100%, 420px);
+  align-self: center;
+}
+
+.btn-ghost {
+  background: transparent;
+  border-color: rgba(200, 200, 220, 0.5);
+  font-size: 1.6rem;
+  padding: 0;
+}
+
+.btn-row {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+}
+
+/* ---------- Domov ---------- */
+
+.home-header {
+  text-align: center;
+}
+
+.home-header h1 {
+  font-size: clamp(2rem, 8vw, 3rem);
+  color: var(--ruzova);
+  text-shadow: 0 0 14px rgba(255, 47, 214, 0.6);
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.hello {
+  font-size: 1.2rem;
+  margin: 4px 0 0;
+  color: var(--strieborna);
+}
+
+.stage {
+  position: relative;
+  width: 100%;
+  max-width: 640px;
+  margin: 0 auto;
+  aspect-ratio: 400 / 220;
+  border-radius: 20px;
+  overflow: hidden;
+  background: linear-gradient(180deg, #24104a, #120820);
+  border: 2px solid rgba(200, 200, 220, 0.25);
+}
+
+.stage-bg {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+
+.stage-cast {
+  position: absolute;
+  inset: 0 0 6% 0;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 4%;
+}
+
+.stage-cast svg {
+  height: 78%;
+  width: auto;
+  filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.5));
+}
+
+.beam {
+  transform-origin: top center;
+  animation: sway 5s ease-in-out infinite alternate;
+}
+.beam-r {
+  animation-delay: -2.5s;
+}
+
+@keyframes sway {
+  from {
+    opacity: 0.6;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.twinkle {
+  animation: twinkle 2.4s ease-in-out infinite;
+}
+
+@keyframes twinkle {
+  0%,
+  100% {
+    opacity: 0.2;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.now-learning {
+  text-align: center;
+}
+
+.now-label {
+  color: var(--strieborna);
+  font-size: 1rem;
+}
+
+.now-skill {
+  font-size: 1.6rem;
+  font-weight: 800;
+  margin: 2px 0 8px;
+}
+
+.meter {
+  height: 16px;
+  max-width: 360px;
+  margin: 0 auto;
+  border-radius: 8px;
+  background: #2a1846;
+  border: 1px solid rgba(200, 200, 220, 0.4);
+  overflow: hidden;
+}
+
+.meter-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--fialova-svetla), var(--ruzova));
+  transition: width 0.6s ease;
+}
+
+/* ---------- Kolo a setlist ---------- */
+
+.round-top {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.setlist {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+  flex: 1;
+}
+
+.slot {
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 2px solid rgba(200, 200, 220, 0.45);
+  display: grid;
+  place-items: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(246, 242, 255, 0.6);
+}
+
+.slot-done {
+  background: var(--ruzova);
+  border-color: #ffd0f6;
+  color: #fff;
+  box-shadow: 0 0 8px rgba(255, 47, 214, 0.6);
+  animation: pop 0.35s ease;
+}
+
+.slot-current {
+  border-color: var(--ruzova);
+  color: var(--biela);
+  box-shadow: 0 0 0 3px rgba(255, 47, 214, 0.3);
+}
+
+.slot-encore {
+  width: auto;
+  padding: 0 6px;
+  border-style: dashed;
+  border-color: var(--ruzova);
+  color: var(--ruzova);
+}
+
+@keyframes pop {
+  0% {
+    transform: scale(0.6);
+  }
+  70% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.round-done h1 {
+  color: var(--ruzova);
+  font-size: clamp(1.8rem, 7vw, 2.6rem);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  justify-content: center;
+}
+
+.round-done {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* ---------- Aktivity ---------- */
+
+.activity {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.activity-title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: var(--ruzova);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  text-align: center;
+}
+
+.prompt {
+  font-size: 1.45rem;
+  font-weight: 700;
+  text-align: center;
+  margin: 0;
+}
+
+.activity-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  align-items: center;
+}
+
+.picture {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+.picture svg.tenframes {
+  width: min(100%, 300px);
+  max-height: 34vh;
+}
+
+.picture svg.base10 {
+  max-width: 100%;
+  height: min(140px, 22vh);
+}
+
+.picture svg.guitar-neck {
+  width: min(100%, 320px);
+}
+
+.picture-small svg.tenframes {
+  width: min(100%, 220px);
+}
+
+.compare-pics {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+  width: 100%;
+}
+
+.compare-pics svg.tenframes {
+  width: min(46%, 220px);
+}
+
+figure.hint {
+  margin: 0;
   display: flex;
   flex-direction: column;
   align-items: center;
-  justify-content: center;
-  padding: 16px;
-  text-align: center;
+  gap: 6px;
+  width: 100%;
 }
-.placeholder h1 { color: var(--ruzova); font-size: 2.5rem; margin: 0.5rem 0; }
-.placeholder p { font-size: 1.25rem; }
-.placeholder .build { font-size: 0.8rem; opacity: 0.6; }
+
+figure.hint figcaption {
+  font-size: 1.4rem;
+  font-weight: 800;
+}
+
+.answer-area {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
+  width: 100%;
+}
+
+.equation {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  font-size: clamp(2.2rem, 10vw, 3rem);
+  font-weight: 800;
+  min-height: 72px;
+}
+
+.box {
+  min-width: 76px;
+  height: 68px;
+  padding: 0 10px;
+  border-radius: 14px;
+  border: 3px dashed var(--ruzova);
+  display: inline-grid;
+  place-items: center;
+  background: rgba(255, 47, 214, 0.08);
+}
+
+.box-ok {
+  border-style: solid;
+  border-color: var(--ok);
+  background: rgba(92, 242, 176, 0.15);
+}
+
+.box-reveal {
+  border-style: solid;
+  border-color: var(--strieborna);
+  background: rgba(200, 200, 220, 0.15);
+}
+
+.keypad {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(var(--touch), 88px));
+  gap: 10px;
+  justify-content: center;
+}
+
+.key {
+  height: 64px;
+  border-radius: 16px;
+  border: 2px solid rgba(200, 200, 220, 0.6);
+  background: linear-gradient(180deg, #2c1650, #1a0c30);
+  font-size: 1.9rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.key:active {
+  background: var(--fialova);
+}
+
+.key:disabled {
+  opacity: 0.4;
+}
+
+.key-ok {
+  background: linear-gradient(180deg, #ff5ae0, #c21aa4);
+  border-color: #ffd0f6;
+}
+
+.key-del {
+  font-size: 1.5rem;
+}
+
+.choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  justify-content: center;
+}
+
+.choice {
+  min-width: 76px;
+  min-height: 72px;
+  border-radius: 18px;
+  border: 2px solid var(--strieborna);
+  background: linear-gradient(180deg, #2c1650, #1a0c30);
+  font-size: 2rem;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.choice-wrong {
+  opacity: 0.3;
+  text-decoration: line-through;
+}
+
+.feedback {
+  font-size: 1.35rem;
+  font-weight: 700;
+  text-align: center;
+  padding: 10px 14px;
+  border-radius: 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  max-width: 520px;
+  align-self: center;
+}
+
+.feedback-ok {
+  flex-direction: row;
+  justify-content: center;
+  color: var(--ok);
+  animation: pop 0.35s ease;
+}
+
+.feedback-hint {
+  background: rgba(155, 91, 224, 0.25);
+  border: 2px solid var(--fialova-svetla);
+}
+
+.feedback-reveal {
+  background: rgba(200, 200, 220, 0.12);
+  border: 2px solid var(--strieborna);
+}
+
+/* Gitara: po správnom naladení struny zažiaria. */
+.guitar-neck .string {
+  transition: stroke 0.3s;
+}
+.guitar-neck.tuned .string {
+  stroke: var(--ruzova);
+  animation: vibrate 0.15s linear 5;
+}
+
+@keyframes vibrate {
+  50% {
+    transform: translateY(1px);
+  }
+}
+
+/* ---------- Kamaráti ---------- */
+
+.kamarati {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 12px;
+  align-items: center;
+  width: 100%;
+  max-width: 520px;
+  margin: 0 auto;
+}
+
+.notes {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.note-btn {
+  min-height: 64px;
+  border-radius: 18px;
+  border: 2px solid var(--ruzova);
+  background: linear-gradient(180deg, #2c1650, #1a0c30);
+  font-size: 2rem;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  cursor: pointer;
+}
+
+.note-right {
+  border-color: var(--strieborna);
+}
+
+.note-btn.selected {
+  background: var(--fialova);
+  box-shadow: 0 0 0 4px rgba(255, 47, 214, 0.5);
+  transform: scale(1.04);
+}
+
+.note-btn.matched {
+  background: rgba(92, 242, 176, 0.18);
+  border-color: var(--ok);
+  opacity: 0.85;
+}
+
+.kamarati-mid {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.kamarati-total {
+  font-size: 2.4rem;
+  font-weight: 800;
+  color: var(--ruzova);
+}
+
+/* ---------- Oslava ---------- */
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 4, 20, 0.85);
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  z-index: 10;
+}
+
+.celebration {
+  width: min(100%, 640px);
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  align-items: center;
+  text-align: center;
+  animation: pop 0.5s ease;
+}
+
+.celebration h1,
+.screen.center h1 {
+  color: var(--ruzova);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: clamp(1.8rem, 7vw, 2.6rem);
+}
+
+/* ---------- iPad a širšie displeje ---------- */
+
+@media (min-width: 700px) {
+  .slot {
+    width: 40px;
+    height: 40px;
+    font-size: 1rem;
+  }
+  .prompt {
+    font-size: 1.8rem;
+  }
+  .picture svg.tenframes {
+    width: min(100%, 380px);
+  }
+  .key {
+    height: 76px;
+  }
+  .keypad {
+    grid-template-columns: repeat(3, 96px);
+  }
+}
+
+/* Na šírku (iPad): obrázok vľavo, odpoveď vpravo. */
+@media (min-width: 900px) and (orientation: landscape) {
+  .activity-body {
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 32px;
+  }
+  .picture,
+  .answer-area {
+    flex: 1;
+  }
+  .picture svg.tenframes {
+    max-height: 60vh;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
+  }
+}
