@@ -12,7 +12,7 @@ export function Home({ state, onPlay, onPlacement }: { state: GameState; onPlay:
     <main className="screen home">
       <header className="home-header">
         <h1>
-          <Lightning size={34} /> Lulčina kapela
+          <Lightning size={34} /> Elektrické víly
         </h1>
         <p className="hello">Ahoj, {state.nickname}! Si manažérka kapely.</p>
       </header>

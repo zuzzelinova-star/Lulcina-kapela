@@ -1,4 +1,4 @@
-# Lulčina kapela
+# Elektrické víly
 
 Matematická hra pre Lulu (2. ročník ZŠ). Zadanie: [SPEC.md](SPEC.md).
 
