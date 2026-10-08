@@ -1,7 +1,7 @@
 import { ENABLED_ACTIVITIES, pairKey, pairLeft, supports } from './activities'
 import { isDue } from './dates'
 import { instantiate, type LadderIndex } from './items'
-import { currentSkill, dueReviewItems, type ItemStates } from './mastery'
+import { currentSkill, dueReviewItems, MASTERED_LEVEL, type ItemStates } from './mastery'
 import { shuffle, type Rng } from './rng'
 import type { ActivityId, ItemDef, Task } from './types'
 
@@ -242,4 +242,38 @@ export function fillerTask(index: LadderIndex, avoidItemId: string, rng: Rng, en
   const other = others[Math.floor(rng() * others.length)]
   const options = activitiesFor(index, other, enabled, rng).filter((a) => a !== 'kamarati')
   return singleTask(other, options[0] ?? 'skusobna', rng, true)
+}
+
+export const CONCERT_SIZE = 6
+/** Koncert sa dá hrať, keď je osvojených aspoň toľko príkladov. */
+export const CONCERT_MIN_ITEMS = 6
+
+/** Osvojené položky odomknutých zručností – len z nich sa skladá koncert. */
+export function concertPool(index: LadderIndex, items: ItemStates, unlockedUpTo: number): ItemDef[] {
+  return index.skills
+    .filter((s) => s.order <= unlockedUpTo)
+    .flatMap((s) => index.itemsBySkill.get(s.id) ?? [])
+    .filter((it) => (items[it.id]?.level ?? 0) >= MASTERED_LEVEL)
+}
+
+/**
+ * Koncert: krátke oslavné kolo len z osvojených príkladov.
+ * Vracia prázdny zoznam, ak ešte nie je z čoho hrať.
+ */
+export function buildConcert(input: BuildInput): Task[] {
+  const { index, items, unlockedUpTo, rng } = input
+  const enabled = (input.enabled ?? ENABLED_ACTIVITIES).filter((a) => a !== 'kamarati')
+  const pool = concertPool(index, items, unlockedUpTo)
+  if (pool.length < CONCERT_MIN_ITEMS) return []
+  const used = new Map<ActivityId, number>()
+  const tasks: Task[] = []
+  for (const item of shuffle(rng, pool)) {
+    if (tasks.length >= (input.size ?? CONCERT_SIZE)) break
+    const options = activitiesFor(index, item, enabled, rng)
+    if (options.length === 0) continue
+    const activity = leastUsed(options, used, rng)
+    used.set(activity, (used.get(activity) ?? 0) + 1)
+    tasks.push(singleTask(item, activity, rng))
+  }
+  return arrange(tasks, rng)
 }

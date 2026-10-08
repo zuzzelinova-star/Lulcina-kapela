@@ -5,7 +5,7 @@ import { addDays } from './dates'
 import { indexLadder } from './items'
 import { MASTERED_LEVEL, newItemState, type ItemStates } from './mastery'
 import { mulberry32 } from './rng'
-import { arrange, buildSetlist, DEFAULT_SETLIST_SIZE, fillerTask, insertRetry, retryTask, sequenceViolations } from './setlist'
+import { arrange, buildConcert, buildSetlist, CONCERT_SIZE, DEFAULT_SETLIST_SIZE, fillerTask, insertRetry, retryTask, sequenceViolations } from './setlist'
 import type { ActivityId, Task } from './types'
 
 const index = indexLadder(LADDER)
@@ -154,7 +154,7 @@ describe('návrat položky po chybe', () => {
     const rng = mulberry32(3)
     for (let i = 0; i < 20; i++) {
       const t = retryTask(index, 'scitanie10/add:3+4', 'skusobna', rng)
-      expect(t.activity).toBe('ladenie')
+      expect(t.activity).not.toBe('skusobna')
       expect(t.retry).toBe(true)
       expect(t.facts[0]).toEqual({ kind: 'add', a: 3, b: 4 })
     }
@@ -164,5 +164,23 @@ describe('návrat položky po chybe', () => {
     const t = fillerTask(index, 'scitanie10/add:3+4', mulberry32(1))!
     expect(t.itemIds[0]).not.toBe('scitanie10/add:3+4')
     expect(t.itemIds[0].startsWith('scitanie10/')).toBe(true)
+  })
+})
+
+describe('koncert', () => {
+  it('len z osvojených príkladov, 6 úloh, bez Kamarátov', () => {
+    const items = masteredUpTo(4)
+    for (let seed = 1; seed <= 20; seed++) {
+      const tasks = buildConcert({ index, items, unlockedUpTo: 5, today: TODAY, rng: mulberry32(seed) })
+      expect(tasks).toHaveLength(CONCERT_SIZE)
+      for (const t of tasks) {
+        expect(t.activity).not.toBe('kamarati')
+        for (const id of t.itemIds) expect(items[id]?.level).toBeGreaterThanOrEqual(MASTERED_LEVEL)
+      }
+      expect(sequenceViolations(tasks)).toBe(0)
+    }
+  })
+  it('bez osvojených príkladov sa koncert nehrá', () => {
+    expect(buildConcert({ index, items: {}, unlockedUpTo: 3, today: TODAY, rng: mulberry32(1) })).toEqual([])
   })
 })

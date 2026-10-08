@@ -187,17 +187,88 @@ h2 {
 
 .stage-cast {
   position: absolute;
-  inset: 0 0 6% 0;
+  inset: 12% 2% 6% 2%;
   display: flex;
   align-items: flex-end;
   justify-content: center;
-  gap: 4%;
+  gap: 2%;
 }
 
-.stage-cast svg {
-  height: 78%;
+/* Postavičky sa zmenšia, keď ich je v kapele viac. */
+.stage-cast > svg {
+  flex: 0 1 auto;
+  min-width: 0;
   width: auto;
+  height: auto;
+  max-height: 100%;
+  max-width: 30%;
   filter: drop-shadow(0 6px 8px rgba(0, 0, 0, 0.5));
+}
+
+.stage.playing .stage-cast > svg {
+  animation: bob 0.45s ease-in-out infinite alternate;
+}
+.stage.playing .stage-cast > svg:nth-child(2n) {
+  animation-delay: -0.22s;
+}
+
+@keyframes bob {
+  from {
+    transform: translateY(0);
+  }
+  to {
+    transform: translateY(-5%);
+  }
+}
+
+.stage-notes {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+.stage-notes svg {
+  position: absolute;
+  bottom: 30%;
+  animation: float-note 2.2s ease-in infinite;
+  opacity: 0;
+}
+.stage-notes svg:nth-child(1) {
+  left: 22%;
+}
+.stage-notes svg:nth-child(2) {
+  left: 50%;
+  animation-delay: 0.7s;
+}
+.stage-notes svg:nth-child(3) {
+  left: 75%;
+  animation-delay: 1.4s;
+}
+
+@keyframes float-note {
+  0% {
+    transform: translateY(0) rotate(-10deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-120%) rotate(15deg);
+    opacity: 0;
+  }
+}
+
+.stage-small {
+  max-width: 420px;
+}
+
+.neon {
+  filter: drop-shadow(0 0 4px var(--ruzova));
+  animation: twinkle 3s ease-in-out infinite;
+}
+
+.smoke {
+  animation: sway 4s ease-in-out infinite alternate;
 }
 
 .beam {
@@ -659,6 +730,355 @@ figure.hint figcaption {
   font-size: clamp(1.8rem, 7vw, 2.6rem);
 }
 
+/* ---------- Hlavička aktivity a čítanie nahlas ---------- */
+
+.activity-header {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.prompt-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.speak-btn {
+  flex: 0 0 auto;
+  color: var(--ruzova);
+  border-color: var(--ruzova);
+}
+
+/* ---------- Schody ---------- */
+
+.picture svg.stairs {
+  width: min(100%, 420px);
+}
+
+.stairs-fairy {
+  transition: transform 0.7s cubic-bezier(0.3, 1.4, 0.5, 1);
+}
+
+/* ---------- Slovná úloha ---------- */
+
+.story {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+}
+
+.story-cast {
+  display: flex;
+  align-items: flex-end;
+  gap: 6px;
+}
+
+.story-text {
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.45;
+  text-align: center;
+  margin: 0;
+  max-width: 28ch;
+  padding: 12px 16px;
+  border-radius: 18px;
+  background: rgba(107, 47, 179, 0.25);
+  border: 2px solid rgba(200, 200, 220, 0.35);
+}
+
+.story svg.tenframes {
+  width: min(100%, 260px);
+}
+
+/* ---------- Peniaze a obchod ---------- */
+
+.home-top {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.home-row {
+  display: flex;
+  gap: 12px;
+  justify-content: center;
+}
+
+.home-row .btn {
+  min-width: 140px;
+}
+
+.wallet-wrap {
+  position: relative;
+  margin-left: auto;
+}
+
+.wallet {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px 4px 6px;
+  border-radius: 999px;
+  background: rgba(224, 185, 74, 0.15);
+  border: 2px solid #e0b94a;
+  font-weight: 800;
+  font-size: 1.1rem;
+  white-space: nowrap;
+  min-height: 44px;
+}
+
+.earn-pop {
+  position: absolute;
+  right: 8px;
+  top: 100%;
+  color: #ffd76a;
+  font-weight: 800;
+  font-size: 1.2rem;
+  animation: earn 1.3s ease-out forwards;
+  white-space: nowrap;
+}
+
+@keyframes earn {
+  0% {
+    transform: translateY(0);
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-30px);
+    opacity: 0;
+  }
+}
+
+.concert-title {
+  font-size: 1.4rem;
+  font-weight: 800;
+  color: var(--ruzova);
+  flex: 1;
+  text-align: center;
+}
+
+.shop-title {
+  font-size: 1.6rem;
+  color: var(--ruzova);
+  flex: 1;
+  text-align: center;
+}
+
+.tabs {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 4px;
+  -webkit-overflow-scrolling: touch;
+}
+
+.tab {
+  flex: 0 0 auto;
+  min-height: var(--touch);
+  padding: 0 16px;
+  border-radius: 16px;
+  border: 2px solid rgba(200, 200, 220, 0.5);
+  background: var(--cierna-2);
+  font-size: 1.05rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.tab-active {
+  background: var(--fialova);
+  border-color: var(--ruzova);
+}
+
+.shop-grid {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+  gap: 12px;
+}
+
+.shop-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  padding: 12px 10px;
+  border-radius: 18px;
+  background: linear-gradient(180deg, #2c1650, #1a0c30);
+  border: 2px solid rgba(200, 200, 220, 0.35);
+  text-align: center;
+}
+
+.shop-card.owned {
+  border-color: var(--ok);
+}
+
+.shop-card .btn {
+  width: 100%;
+}
+
+.shop-icon {
+  height: 80px;
+  display: grid;
+  place-items: center;
+}
+
+.shop-icon svg {
+  max-height: 80px;
+  width: auto;
+}
+
+.shop-name {
+  font-weight: 700;
+  font-size: 1rem;
+  min-height: 2.6em;
+}
+
+.price-tag {
+  display: inline-block;
+  padding: 2px 12px;
+  border-radius: 8px;
+  background: #fff3c4;
+  color: #3a2410;
+  font-weight: 800;
+  font-size: 1.15rem;
+  transform: rotate(-2deg);
+}
+
+.price-big {
+  font-size: 1.8rem;
+  padding: 4px 16px;
+}
+
+.shop-state {
+  color: var(--strieborna);
+  font-size: 0.95rem;
+  min-height: var(--touch);
+  display: grid;
+  place-items: center;
+}
+
+.saving {
+  width: 100%;
+  min-height: var(--touch);
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 4px;
+  font-size: 0.9rem;
+  color: var(--strieborna);
+}
+
+.bought {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+  text-align: center;
+}
+
+.bought h2 {
+  color: var(--ruzova);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.pay-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+}
+
+.pay-exact,
+.pay-change,
+.pay-savings {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+
+.counter {
+  width: 100%;
+  max-width: 560px;
+  min-height: 110px;
+  padding: 10px;
+  border-radius: 18px;
+  border: 3px dashed var(--ruzova);
+  background: rgba(255, 47, 214, 0.06);
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  align-items: center;
+  justify-content: center;
+}
+
+.counter-drop {
+  background: rgba(255, 47, 214, 0.18);
+}
+
+.counter-empty {
+  color: var(--strieborna);
+  opacity: 0.7;
+}
+
+.purse {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  justify-content: center;
+  padding: 10px;
+  border-radius: 18px;
+  background: #2a1846;
+  border: 2px solid rgba(200, 200, 220, 0.4);
+  width: 100%;
+  max-width: 560px;
+}
+
+.money-btn {
+  background: none;
+  border: none;
+  padding: 2px;
+  min-width: var(--touch);
+  min-height: var(--touch);
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+}
+
+.money-btn:disabled {
+  opacity: 0.3;
+}
+
+.pile {
+  touch-action: none;
+}
+
+.drag-ghost {
+  position: fixed;
+  transform: translate(-50%, -50%) scale(1.1);
+  pointer-events: none;
+  z-index: 20;
+  filter: drop-shadow(0 6px 10px rgba(0, 0, 0, 0.6));
+}
+
+.pay-note {
+  display: flex;
+  justify-content: center;
+}
+
 /* ---------- iPad a širšie displeje ---------- */
 
 @media (min-width: 700px) {
@@ -752,4 +1172,49 @@ figure.hint figcaption {
   align-self: center;
   min-height: 64px;
   width: min(100%, 360px);
+}
+
+/* Setlist na celú šírku pod tlačidlom domov a peňaženkou. */
+.round-top {
+  flex-wrap: wrap;
+}
+.round-top .setlist {
+  order: 3;
+  flex-basis: 100%;
+  justify-content: center;
+}
+
+.saving .meter {
+  width: 100%;
+}
+
+.tabs {
+  flex-wrap: wrap;
+  justify-content: center;
+  overflow: visible;
+}
+
+.concert .stage-small {
+  max-width: 300px;
+}
+
+/* Menší iPhone: nech sa úloha aj s klávesnicou zmestí bez posúvania. */
+@media (max-width: 420px) {
+  .key {
+    height: 56px;
+  }
+  .keypad {
+    gap: 8px;
+  }
+  .slot {
+    width: 26px;
+    height: 26px;
+    font-size: 0.75rem;
+  }
+  .picture svg.tenframes {
+    max-height: 26vh;
+  }
+  .prompt {
+    font-size: 1.3rem;
+  }
 }

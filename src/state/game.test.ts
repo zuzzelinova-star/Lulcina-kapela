@@ -134,14 +134,87 @@ describe('migrácia uloženého stavu', () => {
       unlockedUpTo: 6,
       items: { 'scitanie10/add:3+4': skipped, 'cisla20/pv:13': played },
       round: { tasks: [], index: 0, retried: [], startedDay: TODAY },
+      money: undefined,
     }
     const s = migrate(v1 as unknown as Record<string, unknown>)
-    expect(s.version).toBe(2)
+    expect(s.version).toBe(3)
     expect(s.unlockedUpTo).toBe(1)
     expect(s.round).toBeNull()
     expect(s.items['scitanie10/add:3+4'].level).toBe(2)
     expect(s.items['scitanie10/add:3+4'].lastChangeDay).toBeNull()
     expect(s.items['cisla20/pv:13']).toEqual(played)
     expect(currentSkill(LADDER_INDEX, s.unlockedUpTo, s.items).id).toBe('pocet10')
+    expect(s.money).toBe(0)
+    expect(s.owned).toEqual([])
+    expect(s.settings).toEqual({ sound: true, speech: true })
+  })
+
+  it('verzia 2: rozohrané kolo dostane druh a zárobok, nové polia predvolené hodnoty', () => {
+    const v2 = { ...initialState(), version: 2, round: { tasks: [], index: 0, retried: [], startedDay: TODAY } }
+    delete (v2 as Record<string, unknown>).money
+    delete (v2 as Record<string, unknown>).settings
+    const s = migrate(v2 as unknown as Record<string, unknown>)
+    expect(s.round!.kind).toBe('setlist')
+    expect(s.round!.earned).toBe(0)
+    expect(s.money).toBe(0)
+    expect(s.settings.speech).toBe(true)
+  })
+})
+
+describe('peniaze a obchod v stave hry', () => {
+  it('správne odpovede zarábajú, chyba nič neberie, dokončený setlist dá bonus', () => {
+    let s = start()
+    const first = s.round!.tasks[0]
+    s = reducer(s, { type: 'taskDone', results: first.itemIds.map((itemId) => ({ itemId, outcome: 'wrong', ms: 1 })), today: TODAY, now: 1, seed: 1 })
+    expect(s.money).toBe(0)
+    let guard = 0
+    while (s.round!.index < s.round!.tasks.length && guard++ < 50) {
+      const t = s.round!.tasks[s.round!.index]
+      s = reducer(s, { type: 'taskDone', results: t.itemIds.map((itemId) => ({ itemId, outcome: 'correct', ms: 1 })), today: TODAY, now: 1, seed: guard })
+    }
+    const answered = s.round!.tasks.slice(1).reduce((n, t) => n + t.itemIds.length, 0)
+    expect(s.money).toBe(answered * 200 + 500)
+    expect(s.round!.earned).toBe(s.money)
+  })
+
+  it('nákup odpočíta peniaze; vec sa nedá kúpiť dvakrát ani na dlh', () => {
+    let s: GameState = { ...initialState(), money: 1000 }
+    s = reducer(s, { type: 'buy', itemId: 'okuliare', today: TODAY })
+    expect(s.money).toBe(600)
+    expect(s.owned).toEqual(['okuliare'])
+    s = reducer(s, { type: 'buy', itemId: 'okuliare', today: TODAY })
+    expect(s.money).toBe(600)
+    s = reducer(s, { type: 'buy', itemId: 'bubenicka', today: TODAY })
+    expect(s.money).toBe(600)
+    s = reducer(s, { type: 'buy', itemId: 'limonada', today: TODAY })
+    s = reducer(s, { type: 'buy', itemId: 'limonada', today: TODAY })
+    expect(s.money).toBe(200)
+    expect(s.owned).toEqual(['okuliare'])
+    expect(s.snack).toEqual({ id: 'limonada', day: TODAY })
+  })
+
+  it('koncert: len osvojené príklady, žiadne opakovanie po chybe, bonus na konci', () => {
+    let s: GameState = { ...initialState(), placementDone: true, unlockedUpTo: 2 }
+    const items: GameState['items'] = {}
+    for (const it of LADDER_INDEX.itemsBySkill.get('pocet10')!) {
+      items[it.id] = { level: 3, lastAttempt: null, nextDue: '2026-12-01', attempts: 3, lastChangeDay: null, reviewStep: 1, times: [], updatedAt: 0 }
+    }
+    s = { ...s, items }
+    s = reducer(s, { type: 'concertStart', today: TODAY, seed: 4 })
+    expect(s.round!.kind).toBe('concert')
+    const n = s.round!.tasks.length
+    for (let i = 0; i < n; i++) {
+      const t = s.round!.tasks[s.round!.index]
+      expect(t.itemIds.every((id) => id.startsWith('pocet10/'))).toBe(true)
+      s = reducer(s, { type: 'taskDone', results: t.itemIds.map((itemId) => ({ itemId, outcome: i === 0 ? 'wrong' : 'correct', ms: 1 })), today: TODAY, now: 1, seed: i })
+    }
+    expect(s.round!.tasks.length).toBe(n)
+    expect(s.money).toBe((n - 1) * 100 + 300)
+    expect(s.roundsCompleted).toBe(0)
+  })
+
+  it('bez osvojených príkladov sa koncert nezačne', () => {
+    const s = reducer({ ...initialState(), placementDone: true }, { type: 'concertStart', today: TODAY, seed: 1 })
+    expect(s.round).toBeNull()
   })
 })

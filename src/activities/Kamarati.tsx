@@ -6,6 +6,8 @@ import { Lightning, Note, Star } from '../ui/art'
 import { HintPicture } from '../ui/visuals'
 import { hash } from './common'
 import { praise } from './Feedback'
+import { ActivityHeader } from './Header'
+import { sfx } from '../ui/sound'
 
 /** Kamaráti: spájanie nôt, ktoré spolu dajú rovnaké číslo (najprv 10, neskôr iné). */
 export function Kamarati({ task, onDone }: { task: Task; onDone: (results: ItemResult[]) => void }) {
@@ -50,6 +52,7 @@ export function Kamarati({ task, onDone }: { task: Task; onDone: (results: ItemR
     if (left.value + right.value === total) {
       const m = misses[item] ?? 0
       results.current[item] = { outcome: m === 0 ? 'correct' : 'hinted', ms: firstMs.current[item] }
+      sfx.correct()
       setMatched((x) => ({ ...x, [item]: ri }))
       setHelp(null)
       setFlash(praise(`${task.id}${item}`))
@@ -57,6 +60,7 @@ export function Kamarati({ task, onDone }: { task: Task; onDone: (results: ItemR
       return
     }
     const m = (misses[item] ?? 0) + 1
+    sfx.soft()
     setMisses((x) => ({ ...x, [item]: m }))
     if (m === 1) {
       setHelp({ item, kind: 'hint' })
@@ -90,8 +94,7 @@ export function Kamarati({ task, onDone }: { task: Task; onDone: (results: ItemR
 
   return (
     <div className="activity">
-      <h2 className="activity-title">Kamaráti do {total}</h2>
-      <p className="prompt">Spoj noty, ktoré spolu dajú {total}.</p>
+      <ActivityHeader title={`Kamaráti do ${total}`} prompt={`Spoj noty, ktoré spolu dajú ${total}.`} />
       <div className="kamarati">
         <div className="notes">
           {lefts.map((l, li) => {

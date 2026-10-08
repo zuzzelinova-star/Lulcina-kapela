@@ -5,6 +5,7 @@ import { Lightning } from '../ui/art'
 import { TenFrames } from '../ui/visuals'
 import { BOX, Equation } from './Equation'
 import { Feedback } from './Feedback'
+import { ActivityHeader } from './Header'
 import { useAttempt } from './useAttempt'
 
 type Pick = 'left' | 'right' | 'same'
@@ -46,8 +47,7 @@ export function Hlasnejsi({ task, onDone }: { task: Task; onDone: (results: Item
 
   return (
     <div className="activity">
-      <h2 className="activity-title">Kto je hlasnejší?</h2>
-      <p className="prompt">Ťukni na hlasnejší reproduktor.</p>
+      <ActivityHeader title="Kto je hlasnejší?" prompt="Ťukni na hlasnejší reproduktor." speech={`Kto je hlasnejší? ${fact.a} alebo ${fact.b}?`} />
       <div className="speakers">
         {speaker('left', fact.a)}
         {speaker('right', fact.b)}

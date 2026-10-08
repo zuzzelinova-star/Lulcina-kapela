@@ -20,7 +20,7 @@ export const LADDER: SkillDef[] = [
       { type: 'count', n: [1, 10] },
       { type: 'compare', a: [1, 10], b: [1, 10], maxDiff: 2, allowEqual: true },
     ],
-    activities: ['skusobna', 'hlasnejsi', 'schody'],
+    activities: ['skusobna', 'hlasnejsi'],
     placement: 1,
   },
   {
@@ -64,8 +64,11 @@ export const LADDER: SkillDef[] = [
     order: 6,
     title: 'Čísla 11–20: desiatka a jednotky',
     kidTitle: 'Čísla do 20',
-    families: [{ type: 'placeValue', n: [10, 20] }],
-    activities: ['skusobna', 'ladenie', 'hlasnejsi', 'schody'],
+    families: [
+      { type: 'placeValue', n: [10, 20] },
+      { type: 'compare', a: [10, 20], b: [10, 20], maxDiff: 2 },
+    ],
+    activities: ['skusobna', 'ladenie', 'hlasnejsi'],
     placement: 2,
   },
   {
@@ -89,7 +92,7 @@ export const LADDER: SkillDef[] = [
       { type: 'add', a: [1, 10], b: [1, 10], result: [2, 20], carry: 'any', relation: 'double' },
       { type: 'add', a: [1, 10], b: [1, 10], result: [2, 20], carry: 'any', relation: 'nearDouble' },
     ],
-    activities: ['skusobna', 'ladenie', 'slovna'],
+    activities: ['skusobna', 'ladenie', 'schody', 'slovna'],
     placement: 2,
   },
   {

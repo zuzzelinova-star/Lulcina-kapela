@@ -18,6 +18,7 @@ npm run build   # produkčný build do dist/
 ## Štruktúra
 
 - `src/content/ladder.ts` – rebrík zručností (dáta; nová zručnosť = nový záznam).
+- `src/content/shop.ts` – veci v obchode a ich ceny; `src/content/money.ts` – mince podľa zručnosti a odmeny.
 - `src/engine/` – čisté funkcie bez UI: generátor príkladov, Leitnerove úrovne, opakovanie, setlist, konkurz. Testy sú vedľa (`*.test.ts`).
 - `src/state/` – stav hry a ukladanie do `localStorage`.
 - `src/activities/`, `src/screens/`, `src/ui/` – obrazovky, aktivity a SVG grafika.

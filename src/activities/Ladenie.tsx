@@ -5,6 +5,7 @@ import { HintPicture } from '../ui/visuals'
 import { hash } from './common'
 import { BOX, Equation, type Token } from './Equation'
 import { Feedback } from './Feedback'
+import { ActivityHeader } from './Header'
 import { useAttempt } from './useAttempt'
 
 /** Ktoré číslo v príklade chýba a aká je správna odpoveď. */
@@ -40,8 +41,7 @@ export function Ladenie({ task, onDone }: { task: Task; onDone: (results: ItemRe
 
   return (
     <div className="activity">
-      <h2 className="activity-title">Ladenie gitary</h2>
-      <p className="prompt">Ktoré číslo chýba?</p>
+      <ActivityHeader title="Ladenie gitary" prompt="Ktoré číslo chýba?" speech={`Ktoré číslo chýba? ${tokens.map((t) => (typeof t === 'object' ? '▢' : t)).join(' ')}`} />
       <div className="activity-body">
         <div className="picture">
           {phase === 'hint' || phase === 'reveal' ? <HintPicture fact={fact} /> : <GuitarNeck tuned={phase === 'success'} />}

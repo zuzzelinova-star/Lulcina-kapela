@@ -3,9 +3,10 @@ import { resultOf } from '../engine/facts'
 import type { Answer, Fact, ItemResult, Task } from '../engine/types'
 import { Choices, Keypad } from '../ui/Keypad'
 import { FactPicture, HintPicture } from '../ui/visuals'
-import { hash, numberOptions, promptFor } from './common'
+import { hash, numberOptions, promptFor, speechFor } from './common'
 import { BOX, Equation, type Token } from './Equation'
 import { Feedback } from './Feedback'
+import { ActivityHeader } from './Header'
 import { useAttempt } from './useAttempt'
 
 function tokensFor(fact: Fact): Token[] {
@@ -44,8 +45,7 @@ export function Skusobna({ task, onDone }: { task: Task; onDone: (results: ItemR
 
   return (
     <div className="activity">
-      <h2 className="activity-title">Skúšobňa</h2>
-      <p className="prompt">{fact.kind === 'compare' ? 'Ktoré číslo je väčšie? Vyber znak.' : promptFor(fact)}</p>
+      <ActivityHeader title="Skúšobňa" prompt={fact.kind === 'compare' ? 'Ktoré číslo je väčšie? Vyber znak.' : promptFor(fact)} speech={speechFor(fact)} />
       <div className="activity-body">
         <div className="picture">{phase === 'ask' || phase === 'success' ? <FactPicture fact={fact} /> : <HintPicture fact={fact} />}</div>
         <div className="answer-area">

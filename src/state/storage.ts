@@ -8,7 +8,7 @@ export function loadState(): GameState {
     const raw = localStorage.getItem(KEY)
     if (!raw) return initialState()
     const parsed = JSON.parse(raw) as Record<string, unknown>
-    if (parsed.version !== 1 && parsed.version !== 2) return initialState()
+    if (![1, 2, 3].includes(parsed.version as number)) return initialState()
     return migrate(parsed)
   } catch {
     return initialState()

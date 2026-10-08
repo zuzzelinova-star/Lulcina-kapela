@@ -43,3 +43,21 @@ export function promptFor(fact: Fact): string {
       return 'Aké je to číslo?'
   }
 }
+
+/** Čo sa prečíta nahlas v Skúšobni (zadanie aj s číslami). */
+export function speechFor(fact: Fact): string {
+  switch (fact.kind) {
+    case 'count':
+      return 'Koľko je bodiek?'
+    case 'compare':
+      return `Ktoré číslo je väčšie, ${fact.a} alebo ${fact.b}?`
+    case 'add':
+      return `Koľko je ${fact.a} + ${fact.b}?`
+    case 'sub':
+      return `Koľko je ${fact.a} − ${fact.b}?`
+    case 'split':
+      return `${fact.total} = ${fact.part} + ▢`
+    case 'placeValue':
+      return 'Aké je to číslo?'
+  }
+}
